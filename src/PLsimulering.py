@@ -47,14 +47,15 @@ for n in range(0,teams):
 	averagescores.append(average/divider)
 
 
-minrank = 11
-if len(sys.argv) == 2: 
-	simlength = sys.argv[0]
-	maxrank = sys.argv[1]
+if len(sys.argv) == 3: 
+	simlength = int(sys.argv[1])
+	teams = int(sys.argv[2])
 else:
 	simlength = 50000
-	maxrank = minrank + 2
+	teams = 5
 
+minrank = 9
+maxrank = minrank + 3
 simnr = 0
 # TODO: legg alle team/totalscore/scorebins i en array med teams elementer. 
 # vil støtte forskjellige antall lag. Bør være ganske rett frem med 
@@ -92,7 +93,7 @@ while (simnr<simlength):
 # averagerank = np.mean(teamrank)
 # scoremax = np.max(totalscore)
 
-rankbins = np.arange(11,13.05,0.1)
+rankbins = np.arange(9,13.05,0.2)
 binindex = np.digitize(teamrank,rankbins)
 scorebins = [{'temp':[]}]
 for n in range(0, teams):
