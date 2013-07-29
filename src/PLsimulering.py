@@ -40,6 +40,9 @@ simlength = 50000
 maxrank = minrank + 2
 
 simnr = 0
+# TODO: legg alle team/totalscore/scorebins i en array med teams elementer. 
+# vil støtte forskjellige antall lag. Bør være ganske rett frem med 
+# en ekstra løkke og teamscore1.append(tempscore1) blir teamscores[1].append(tempscore1)
 teamgroups = []
 teamscore1 = []
 teamscore2 = []
