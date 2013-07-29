@@ -1,3 +1,4 @@
+ # coding=utf-8
 import numpy as np
 import random_subset
 import matplotlib.pyplot as plt
