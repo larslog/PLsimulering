@@ -32,14 +32,6 @@ inputscores.append(points2008+goals2008)
 
 teams = 6
 
-
-score1 = inputscores[0]
-score2 = (inputscores[0]+inputscores[1])/2
-score3 = (inputscores[0]+inputscores[1]+inputscores[2])/3
-#score4 = (score2013+score2012+score2011+score2010)/4
-#score5 = (score2013+score2012+score2011+score2010+score2009)/5
-#score6 = (score2013+score2012+score2011+score2010+score2009+score2008)/6
-
 scores = []
 averagescores = []
 for n in range(0, teams):
@@ -52,68 +44,41 @@ for n in range(0,teams):
 		average = average + scores[m]
 		divider = divider + 1
 	averagescores.append(average/divider)
-	
-print averagescores[2]
-print score3
-	
-
 
 
 minrank = 11
-simlength = 50000
+simlength = 50
 maxrank = minrank + 2
 
 simnr = 0
 # TODO: legg alle team/totalscore/scorebins i en array med teams elementer. 
 # vil støtte forskjellige antall lag. Bør være ganske rett frem med 
 # en ekstra løkke og teamscore1.append(tempscore1) blir teamscores[1].append(tempscore1)
+
 teamgroups = []
-teamscore1 = []
-teamscore2 = []
-teamscore3 = []
-teamscore4 = []
-teamscore5 = []
-teamscore6 = []
-totalscore1 = []
-totalscore2 = []
-totalscore3 = []
-totalscore4 = []
-totalscore5 = []
-totalscore6 = []
+teamscores = []
+totalscores = []
 teamrank = []
 
 while (simnr<simlength):
-    temp = np.array(random_subset.random_subset(rank,teams))
-    np.ndarray.sort(temp)
-    tempind = temp-1
-    tempscore1 = np.array(score1[tempind])
-    tempscore2 = np.array(score2[tempind])
-    tempscore3 = np.array(score3[tempind])
-    tempscore4 = np.array(score4[tempind])
-    tempscore5 = np.array(score5[tempind])
-    tempscore6 = np.array(score6[tempind])
-    tempscoretot1 = np.sum(tempscore1)
-    tempscoretot2 = np.sum(tempscore2)
-    tempscoretot3 = np.sum(tempscore3)
-    tempscoretot4 = np.sum(tempscore4)
-    tempscoretot5 = np.sum(tempscore5)
-    tempscoretot6 = np.sum(tempscore6)
-    if (np.mean(temp)>=minrank) and (np.mean(temp)<maxrank):
-        teamgroups.append(temp)
-        teamscore1.append(tempscore1)
-        teamscore2.append(tempscore2)
-        teamscore3.append(tempscore3)
-        teamscore4.append(tempscore4)
-        teamscore5.append(tempscore5)
-        teamscore6.append(tempscore6)
-        totalscore1 = np.append(totalscore1,tempscoretot1)
-        totalscore2 = np.append(totalscore2,tempscoretot2)
-        totalscore3 = np.append(totalscore3,tempscoretot3)
-        totalscore4 = np.append(totalscore4,tempscoretot4)
-        totalscore5 = np.append(totalscore5,tempscoretot5)
-        totalscore6 = np.append(totalscore6,tempscoretot6)
-        teamrank = np.append(teamrank,np.mean(temp))
-        simnr +=1
+	temp = np.array(random_subset.random_subset(rank,teams))
+	np.ndarray.sort(temp)
+	tempind = temp - 1
+	tempscoretotals = []
+	tempscores = []
+	for n in range(0, teams):
+		tempscores.append(np.array(scores[n][tempind]))
+		tempscoretotals.append(np.sum(tempscores[n]))
+
+	if (np.mean(temp)>=minrank) and (np.mean(temp)<maxrank):
+		print temp
+		teamgroups.append(temp)
+		for n in range(0, teams):
+			teamscores.append(tempscores[n])
+			empty = []
+			totalscores.append(np.append(empty,tempscoretotals[n]))
+		teamrank = np.append(teamrank,np.mean(temp))
+		simnr +=1
 
 # scoreave = np.mean(totalscore)
 # scorestd = np.std(totalscore)
@@ -123,34 +88,21 @@ while (simnr<simlength):
 
 rankbins = np.arange(11,13.05,0.1)
 binindex = np.digitize(teamrank,rankbins)
-scorebins1 = {'temp':[]}
-scorebins2 = {'temp':[]}
-scorebins3 = {'temp':[]}
-scorebins4 = {'temp':[]}
-scorebins5 = {'temp':[]}
-scorebins6 = {'temp':[]}
+scorebins = [{'temp':[]}]
+for n in range(0, teams):
+	scorebins.append({'temp':[]})
 
-for n in range(len(rankbins)):
-    scorebins1[n] =[]
-    scorebins2[n] =[]
-    scorebins3[n] =[]
-    scorebins4[n] =[]
-    scorebins5[n] =[]
-    scorebins6[n] =[]
-del scorebins1['temp']
-del scorebins2['temp']
-del scorebins3['temp']
-del scorebins4['temp']
-del scorebins5['temp']
-del scorebins6['temp']
+for m in range(0, teams):
+	for n in range(len(rankbins)):
+		scorebins[m][n] =[]
 
-for i in range(len(totalscore1)):
-    scorebins1[binindex[i]].append(totalscore1[i])
-    scorebins2[binindex[i]].append(totalscore2[i])
-    scorebins3[binindex[i]].append(totalscore3[i])
-    scorebins4[binindex[i]].append(totalscore4[i])
-    scorebins5[binindex[i]].append(totalscore5[i])
-    scorebins6[binindex[i]].append(totalscore6[i])
+for m in range(0, teams):
+	del scorebins[m]['temp']
+
+
+for m in range(0, teams):	
+	for i in range(len(totalscores[m])):
+		scorebins[m][binindex[i]].append(totalscores[m][i])
 
 
 
@@ -179,7 +131,7 @@ for i in range(len(totalscore1)):
 
 resolution=300
 plt.figure(num=1)
-plt.boxplot(scorebins1)
+plt.boxplot(scorebins[1])
 plt.setp(plt.gca(), 'xticklabels',rankbins)
 plt.setp(plt.xticks()[1], rotation=90)
 plt.title('Last season (12-13)')
