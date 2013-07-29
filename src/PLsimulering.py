@@ -31,14 +31,20 @@ points2008 = np.array([90,86,83,72,63,62,53,51,51,50,45,45,41,41,41,36,35,34,32,
 goals2008 = np.array([68,77,68,68,55,54,39,45,42,58,34,38,41,38,40,34,39,40,28,36])
 inputscores.append(points2008+goals2008)
 
-teams = 5
+simlength = 50000
+teams = 6
+
+if len(sys.argv) == 3: 
+	simlength = int(sys.argv[1])
+	teams = int(sys.argv[2])
+
 
 scores = []
 averagescores = []
-for n in range(0, teams):
+for n in range(0, len(inputscores)):
 	scores.append(inputscores[n])
 	
-for n in range(0,teams):
+for n in range(0,len(inputscores)):
 	average = scores[0]
 	divider = 1
 	for m in range(1, n+1):
@@ -47,15 +53,10 @@ for n in range(0,teams):
 	averagescores.append(average/divider)
 
 
-if len(sys.argv) == 3: 
-	simlength = int(sys.argv[1])
-	teams = int(sys.argv[2])
-else:
-	simlength = 50000
-	teams = 5
+
 
 minrank = 9
-maxrank = minrank + 3
+maxrank = minrank + 4
 simnr = 0
 # TODO: legg alle team/totalscore/scorebins i en array med teams elementer. 
 # vil støtte forskjellige antall lag. Bør være ganske rett frem med 
@@ -64,29 +65,40 @@ simnr = 0
 teamgroups = []
 teamscores = []
 totalscores = []
-for n in range(0, teams):
+for n in range(0, len(inputscores)):
 	totalscores.append([])
 teamrank = []
+
+used = {}
+tries = 0
 
 while (simnr<simlength):
 	temp = np.array(random_subset.random_subset(rank,teams))
 	np.ndarray.sort(temp)
+	key = str(temp)
+	tries = tries +1 
+	if tries > simlength*4:
+		print "Too many attempts used to generate unique combination. Continuing with the ones we have"
+		break
+	if key in used:
+		continue
+	used[key] = 1
 	tempind = temp - 1
 	tempscoretotals = []
 	tempscores = []
-	for n in range(0, teams):
+	for n in range(0, len(scores)):
 		tempscores.append(np.array(scores[n][tempind]))
 		tempscoretotals.append(np.sum(tempscores[n]))
 
 	if (np.mean(temp)>=minrank) and (np.mean(temp)<maxrank):
 		teamgroups.append(temp)
-		for n in range(0, teams):
+		for n in range(0, len(tempscoretotals)):
 			teamscores.append(tempscores[n])
 			empty = []
 			totalscores[n].append(np.append(empty,tempscoretotals[n]))
 		teamrank = np.append(teamrank,np.mean(temp))
 		simnr +=1
-
+		
 # scoreave = np.mean(totalscore)
 # scorestd = np.std(totalscore)
 # scoresplit = np.max(totalscore)-np.min(totalscore)
@@ -96,18 +108,16 @@ while (simnr<simlength):
 rankbins = np.arange(9,13.05,0.2)
 binindex = np.digitize(teamrank,rankbins)
 scorebins = [{'temp':[]}]
-for n in range(0, teams):
+
+
+for m in range(0, len(totalscores)):
 	scorebins.append({'temp':[]})
-
-for m in range(0, teams):
 	for n in range(len(rankbins)):
-		scorebins[m][n] =[]
-
-for m in range(0, teams):
+		scorebins[m][n] = []
 	del scorebins[m]['temp']
 
 
-for m in range(0, teams):	
+for m in range(0, len(totalscores)):	
 	for i in range(len(totalscores[0])):
 		scorebins[m][binindex[i]].append(totalscores[m][i])
 
@@ -116,8 +126,8 @@ for m in range(0, teams):
 newesttable = 13
 maxscore = 100*teams + 150
 minscore = 75*teams
-for n in range(0, teams):
-	title = "Season {0} - {1}, {2} teams and {3} simulations".format((newesttable-1)-n,newesttable-n, teams, simlength)
+for n in range(0, len(inputscores)):
+	title = "Season {0} - {1}, {2} teams and {3} unique combinations".format((newesttable-1)-n,newesttable-n, teams, simnr)
 	resolution=300
 	num = n+1
 	plt.figure(num=num)
