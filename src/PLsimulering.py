@@ -2,6 +2,7 @@
 import numpy as np
 import random_subset
 import matplotlib.pyplot as plt
+import sys
 
 inputscores = []
 
@@ -30,7 +31,7 @@ points2008 = np.array([90,86,83,72,63,62,53,51,51,50,45,45,41,41,41,36,35,34,32,
 goals2008 = np.array([68,77,68,68,55,54,39,45,42,58,34,38,41,38,40,34,39,40,28,36])
 inputscores.append(points2008+goals2008)
 
-teams = 6
+teams = 5
 
 scores = []
 averagescores = []
@@ -47,8 +48,12 @@ for n in range(0,teams):
 
 
 minrank = 11
-simlength = 50
-maxrank = minrank + 2
+if len(sys.argv) == 2: 
+	simlength = sys.argv[0]
+	maxrank = sys.argv[1]
+else:
+	simlength = 50000
+	maxrank = minrank + 2
 
 simnr = 0
 # TODO: legg alle team/totalscore/scorebins i en array med teams elementer. 
@@ -58,6 +63,8 @@ simnr = 0
 teamgroups = []
 teamscores = []
 totalscores = []
+for n in range(0, teams):
+	totalscores.append([])
 teamrank = []
 
 while (simnr<simlength):
@@ -71,12 +78,11 @@ while (simnr<simlength):
 		tempscoretotals.append(np.sum(tempscores[n]))
 
 	if (np.mean(temp)>=minrank) and (np.mean(temp)<maxrank):
-		print temp
 		teamgroups.append(temp)
 		for n in range(0, teams):
 			teamscores.append(tempscores[n])
 			empty = []
-			totalscores.append(np.append(empty,tempscoretotals[n]))
+			totalscores[n].append(np.append(empty,tempscoretotals[n]))
 		teamrank = np.append(teamrank,np.mean(temp))
 		simnr +=1
 
@@ -101,76 +107,24 @@ for m in range(0, teams):
 
 
 for m in range(0, teams):	
-	for i in range(len(totalscores[m])):
+	for i in range(len(totalscores[0])):
 		scorebins[m][binindex[i]].append(totalscores[m][i])
 
 
 
-# print('Minimum average rank:', minrank)
-# print('Maximum average rank:', maxrank)
-# print('Average rank:', averagerank)
-# print('Average score:', scoreave)
-# print('Score standard deviation:', scorestd)
-# print('Difference between maximum and minimum score:', scoresplit)
-# print('Number of team groups:', simlength)
-# print('Max score:', scoremax)
-
-#plt.figure(num=1)
-# plt.subplot(311)
-# plt.plot(teamrank,totalscore,'ro')
-# plt.axis([2,18,400,900])
-# plt.ylabel('Total score')
-# plt.xlabel('Average team rank')
-#  
-# plt.subplot(312)
-# plt.hist(teamrank,np.arange(0,20.5,0.5))
-# plt.ylabel('Simulated combinations')
-# plt.xlabel('Average team rank')
-#  
-# plt.subplot(313)
-
-resolution=300
-plt.figure(num=1)
-plt.boxplot(scorebins[1])
-plt.setp(plt.gca(), 'xticklabels',rankbins)
-plt.setp(plt.xticks()[1], rotation=90)
-plt.title('Last season (12-13)')
-plt.ylim([450,700])
-plt.savefig('PLavg1.png',bbox_inches=0,dpi=resolution)
-plt.clf()
-
-plt.figure(num=2)
-plt.boxplot(scorebins2)
-plt.setp(plt.gca(), 'xticklabels',rankbins)
-plt.setp(plt.xticks()[1], rotation=90)
-plt.title('Average 2 last seasons (11-13)')
-plt.ylim([450,700])
-plt.savefig('PLavg2.png',bbox_inches=0,dpi=resolution)
-plt.clf()
-
-plt.figure(num=3)
-plt.boxplot(scorebins3)
-plt.setp(plt.gca(), 'xticklabels',rankbins)
-plt.setp(plt.xticks()[1], rotation=90)
-plt.title('Average 3 last seasons (10-13)')
-plt.ylim([450,700])
-plt.savefig('PLavg3.png',bbox_inches=0,dpi=resolution)
-plt.clf()
-
-plt.figure(num=4)
-plt.boxplot(scorebins4)
-plt.setp(plt.gca(), 'xticklabels',rankbins)
-plt.setp(plt.xticks()[1], rotation=90)
-plt.title('Average 4 last seasons (09-13)')
-plt.ylim([450,700])
-plt.savefig('PLavg4.png',bbox_inches=0,dpi=resolution)
-plt.clf()
-
-plt.figure(num=5)
-plt.boxplot(scorebins5)
-plt.setp(plt.gca(), 'xticklabels',rankbins)
-plt.setp(plt.xticks()[1], rotation=90)
-plt.title('Average 5 last seasons (08-13)')
-plt.ylim([450,700])
-plt.savefig('PLavg5.png',bbox_inches=0,dpi=resolution)
-plt.clf()
+newesttable = 13
+maxscore = 100*teams + 150
+minscore = 75*teams
+for n in range(0, teams):
+	title = "Season {0} - {1}, {2} teams and {3} simulations".format((newesttable-1)-n,newesttable-n, teams, simlength)
+	resolution=300
+	num = n+1
+	plt.figure(num=num)
+	plt.boxplot(scorebins[n])
+	plt.setp(plt.gca(), 'xticklabels',rankbins)
+	plt.setp(plt.xticks()[1], rotation=90)
+	plt.title(title)
+	plt.ylim([minscore,maxscore])
+	file = 'PLscores' + str(n) + 'Teams' + str(teams) +'.png'
+	plt.savefig(file,bbox_inches=0,dpi=resolution)
+	plt.clf()
