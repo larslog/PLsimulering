@@ -3,39 +3,62 @@ import numpy as np
 import random_subset
 import matplotlib.pyplot as plt
 
+inputscores = []
+
 rank = range(1,21)
 points2013 = np.array([89,78,75,73,72,63,61,49,46,46,44,43,42,41,41,41,39,36,28,25])
 goals2013 = np.array([86,66,75,72,66,55,71,53,47,45,41,50,34,49,47,45,41,47,43,30])
-score2013 = points2013 + goals2013
+inputscores.append(points2013 + goals2013)
 
 points2012 = np.array([89,89,70,69,65,64,56,52,52,47,47,47,45,45,43,38,37,36,31,25])
 goals2012 = np.array([93,89,74,66,56,65,50,47,48,45,44,52,45,36,42,37,43,46,48,40])
-score2012 = points2012 + goals2012
+inputscores.append(points2012 + goals2012)
 
 points2011 = np.array([80,71,71,68,62,58,54,49,48,47,47,46,46,46,43,42,40,39,39,33])
 goals2011 = np.array([78,69,60,72,55,59,51,49,48,45,56,56,46,52,46,40,46,37,55,43])
-score2011 = points2011 + goals2011
+inputscores.append(points2011 + goals2011)
 
 points2010 = np.array([86,85,75,70,67,64,63,61,50,50,47,46,44,39,38,36,35,30,30,28])
 goals2010 = np.array([103,86,83,67,73,52,61,60,38,41,34,39,48,42,32,37,47,42,34,34])
-score2010 = points2010+goals2010
+inputscores.append(points2010+goals2010)
 
 points2009 = np.array([90,86,83,72,63,62,53,51,51,50,45,45,41,41,41,36,35,34,32,32])
 goals2009 = np.array([68,77,68,68,55,54,39,45,42,58,34,38,41,38,40,34,39,40,28,36])
-score2009 = points2009+goals2009
+inputscores.append(points2009+goals2009)
 
 points2008 = np.array([90,86,83,72,63,62,53,51,51,50,45,45,41,41,41,36,35,34,32,32])
 goals2008 = np.array([68,77,68,68,55,54,39,45,42,58,34,38,41,38,40,34,39,40,28,36])
-score2008 = points2008+goals2008
-
-score1 = score2013
-score2 = (score2013+score2012)/2
-score3 = (score2013+score2012+score2011)/3
-score4 = (score2013+score2012+score2011+score2010)/4
-score5 = (score2013+score2012+score2011+score2010+score2009)/5
-score6 = (score2013+score2012+score2011+score2010+score2009+score2008)/6
+inputscores.append(points2008+goals2008)
 
 teams = 6
+
+
+score1 = inputscores[0]
+score2 = (inputscores[0]+inputscores[1])/2
+score3 = (inputscores[0]+inputscores[1]+inputscores[2])/3
+#score4 = (score2013+score2012+score2011+score2010)/4
+#score5 = (score2013+score2012+score2011+score2010+score2009)/5
+#score6 = (score2013+score2012+score2011+score2010+score2009+score2008)/6
+
+scores = []
+averagescores = []
+for n in range(0, teams):
+	scores.append(inputscores[n])
+	
+for n in range(0,teams):
+	average = scores[0]
+	divider = 1
+	for m in range(1, n+1):
+		average = average + scores[m]
+		divider = divider + 1
+	averagescores.append(average/divider)
+	
+print averagescores[2]
+print score3
+	
+
+
+
 minrank = 11
 simlength = 50000
 maxrank = minrank + 2
